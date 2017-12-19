@@ -9,6 +9,7 @@ from .mysql_node import MysqlNode
 from .postgres_node import PostgresNode
 from .mssql_node import MssqlNode
 from .postgres_database import PostgresDatabase
+from .postgres_database_jdbc import PostgresDatabaseJdbc
 from .mssql_database import MssqlDatabase
 from .pipeline_object import PipelineObject
 from .precondition import Precondition

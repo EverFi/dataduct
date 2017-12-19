@@ -12,6 +12,7 @@ from ..utils.exceptions import ETLInputError
 config = Config()
 MAX_RETRIES = config.etl.get('MAX_RETRIES', const.ZERO)
 RETRY_DELAY = config.etl.get('RETRY_DELAY', const.DEFAULT_DELAY)
+ATTEMPT_TIMEOUT = const.FREQUENCY_PERIOD_CONVERSION[config.etl.get('ATTEMPT_TIMEOUT', const.DEFAULT_ATTEMPT_TIMEOUT)][0]
 
 
 class CopyActivity(Activity):
@@ -56,6 +57,7 @@ class CopyActivity(Activity):
         super(CopyActivity, self).__init__(
             id=id,
             retryDelay=RETRY_DELAY,
+            attemptTimeout=ATTEMPT_TIMEOUT,
             type='CopyActivity',
             maximumRetries=max_retries,
             dependsOn=depends_on,

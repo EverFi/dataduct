@@ -48,3 +48,27 @@ SCRIPT_RUNNER_COMMAND = COMMAND_TEMPLATE.format(
 
 SQL_RUNNER_COMMAND = COMMAND_TEMPLATE.format(
     file='dataduct.steps.executors.runner', func='sql_runner')
+
+FREQUENCY_PERIOD_CONVERSION = {
+    'weekly': ('1 week', None),
+    '1-week': ('1 week', None),
+    '2-weeks': ('2 weeks', None),
+    'daily': ('1 day', None),
+    '1-day': ('1 day', None),
+    '2-days': ('2 days', None),
+    '3-days': ('3 days', None),
+    '4-days': ('4 days', None),
+    '5-days': ('5 days', None),
+    '6-days': ('6 days', None),
+    'hourly': ('1 hour', None),
+    '1-hour': ('1 hour', None),
+    '2-hours': ('2 hours', None),
+    '3-hours': ('3 hours', None),
+    '4-hours': ('4 hours', None),
+    '6-hours': ('6 hours', None),
+    '8-hours': ('8 hours', None),
+    '12-hours': ('12 hours', None),
+    'one-time': ('15 minutes', 1),
+}
+
+DEFAULT_ATTEMPT_TIMEOUT = '1-hour'

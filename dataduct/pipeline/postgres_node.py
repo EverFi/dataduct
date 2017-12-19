@@ -11,7 +11,7 @@ class PostgresNode(PipelineObject):
     """SQL Data Node class
     """
 
-    def __init__(self, id, schedule, host, database, username, password,
+    def __init__(self, id, schedule, database, username, password,
                  select_query, insert_query, table, depends_on=None):
         """Constructor for the SqlNode class
 

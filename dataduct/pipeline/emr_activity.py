@@ -10,7 +10,7 @@ from ..utils.exceptions import ETLInputError
 
 config = Config()
 MAX_RETRIES = config.etl.get('MAX_RETRIES', const.ZERO)
-
+ATTEMPT_TIMEOUT = const.FREQUENCY_PERIOD_CONVERSION[config.etl.get('ATTEMPT_TIMEOUT', const.DEFAULT_ATTEMPT_TIMEOUT)][0]
 
 class EmrActivity(Activity):
     """EMR Activity class
@@ -56,6 +56,7 @@ class EmrActivity(Activity):
             id=id,
             type='EmrActivity',
             maximumRetries=max_retries,
+            attemptTimeout=ATTEMPT_TIMEOUT,
             dependsOn=depends_on,
             runsOn=resource,
             workerGroup=worker_group,

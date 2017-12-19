@@ -12,7 +12,7 @@ from ..utils.exceptions import ETLInputError
 config = Config()
 MAX_RETRIES = config.etl.get('MAX_RETRIES', const.ZERO)
 RETRY_DELAY = config.etl.get('RETRY_DELAY', const.DEFAULT_DELAY)
-
+ATTEMPT_TIMEOUT = const.FREQUENCY_PERIOD_CONVERSION[config.etl.get('ATTEMPT_TIMEOUT', const.DEFAULT_ATTEMPT_TIMEOUT)][0]
 
 class SqlActivity(Activity):
     """Sql Activity class
@@ -48,9 +48,6 @@ class SqlActivity(Activity):
             raise ETLInputError(
                 'Input schedule must be of the type Schedule')
 
-        if not isinstance(script, S3File):
-            raise ETLInputError('script must be an S3File')
-
         # Set default values
         if depends_on is None:
             depends_on = []
@@ -60,14 +57,20 @@ class SqlActivity(Activity):
         super(SqlActivity, self).__init__(
             id=id,
             retryDelay=RETRY_DELAY,
+            attemptTimeout=ATTEMPT_TIMEOUT,
             type='SqlActivity',
             maximumRetries=max_retries,
             dependsOn=depends_on,
             runsOn=resource,
             workerGroup=worker_group,
             schedule=schedule,
-            scriptUri=script,
             scriptArgument=script_arguments,
             database=database,
             queue=queue
         )
+        if isinstance(script, str):
+            self.fields['script'] = [script]
+        elif isinstance(script, S3File):
+            self.fields['scriptUri'] = [script]
+        else:
+            raise ETLInputError('script must be an S3File or a string sql statement')

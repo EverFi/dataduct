@@ -12,7 +12,7 @@ from ..utils.exceptions import ETLInputError
 config = Config()
 MAX_RETRIES = config.etl.get('MAX_RETRIES', const.ZERO)
 RETRY_DELAY = config.etl.get('RETRY_DELAY', const.DEFAULT_DELAY)
-
+ATTEMPT_TIMEOUT = const.FREQUENCY_PERIOD_CONVERSION[config.etl.get('ATTEMPT_TIMEOUT', const.DEFAULT_ATTEMPT_TIMEOUT)][0]
 
 class RedshiftCopyActivity(Activity):
     """EMR Activity class
@@ -63,6 +63,7 @@ class RedshiftCopyActivity(Activity):
             'output': output_node,
             'runsOn': resource,
             'workerGroup': worker_group,
+            'attemptTimeout': ATTEMPT_TIMEOUT,
             'insertMode': insert_mode,
             'schedule': schedule,
             'dependsOn': depends_on,

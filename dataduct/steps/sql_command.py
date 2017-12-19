@@ -20,6 +20,7 @@ class SqlCommandStep(ETLStep):
     def __init__(self,
                  redshift_database,
                  script=None,
+                 script_file=None,
                  script_arguments=None,
                  queue=None,
                  sql_script=None,
@@ -45,15 +46,20 @@ class SqlCommandStep(ETLStep):
         super(SqlCommandStep, self).__init__(**kwargs)
 
         # Create S3File with script / command provided
-        if script:
+        if script_file:
             sql_script = SqlScript(filename=parse_path(script))
+        elif script:
+            sql_script = SqlScript(script)
         elif command:
             sql_script = SqlScript(command)
 
         if wrap_transaction:
             sql_script = sql_script.wrap_transaction()
 
-        script = self.create_script(S3File(text=sql_script.sql()))
+        if script:
+            script = sql_script.sql()
+        else:
+            script = self.create_script(S3File(text=sql_script.sql()))
 
         logger.debug('Sql Query:')
         logger.debug(sql_script)
