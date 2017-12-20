@@ -5,6 +5,10 @@ Pipeline object class for Rds database
 from ..config import Config
 from .pipeline_object import PipelineObject
 from ..utils.exceptions import ETLConfigError
+import logging
+
+logging.basicConfig()
+logger = logging.getLogger(__name__)
 
 config = Config()
 
@@ -12,9 +16,11 @@ if not hasattr(config, 'postgres'):
     raise ETLConfigError('Postgres credentials missing from config')
 
 
-postgres_jar = config.etl['POSTGRES_JDBC_JAR_LOCATION']
-if not postgres_jar:
-    raise ETLConfigError('Postgres Jar missing from config')
+if not hasattr(config, 'etl'):
+    raise ETLConfigError('etl not configured in config file')
+
+if not hasattr(config.etl, 'POSTGRES_JDBC_JAR_LOCATION'):
+    logger.warning('postgres jdbc jar not configured. If using PostgresDatabaseJdbc this may result in errors')
 
 class PostgresDatabaseJdbc(PipelineObject):
     """Postgres resource class
