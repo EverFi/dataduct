@@ -19,8 +19,10 @@ if not hasattr(config, 'postgres'):
 if not hasattr(config, 'etl'):
     raise ETLConfigError('etl not configured in config file')
 
-if not hasattr(config.etl, 'POSTGRES_JDBC_JAR_LOCATION'):
+if not 'POSTGRES_JDBC_JAR_LOCATION' in config.etl:
     logger.warning('postgres jdbc jar not configured. If using PostgresDatabaseJdbc this may result in errors')
+
+postgres_jar = config.etl['POSTGRES_JDBC_JAR_LOCATION']
 
 class PostgresDatabaseJdbc(PipelineObject):
     """Postgres resource class
