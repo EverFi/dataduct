@@ -35,6 +35,7 @@ class TransformStep(ETLStep):
                  output_path=None,
                  no_output=False,
                  no_input=False,
+                 precondition=None,
                  **kwargs):
         """Constructor for the TransformStep class
 
@@ -128,6 +129,7 @@ class TransformStep(ETLStep):
             max_retries=self.max_retries,
             depends_on=self.depends_on,
             additional_s3_files=additional_s3_files,
+            precondition=precondition,
         )
 
     def translate_arguments(self, script_arguments):

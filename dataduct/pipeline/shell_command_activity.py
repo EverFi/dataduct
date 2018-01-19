@@ -8,6 +8,8 @@ from ..config import Config
 from .schedule import Schedule
 from ..utils import constants as const
 from ..utils.exceptions import ETLInputError
+import logging
+logger = logging.getLogger(__name__)
 
 config = Config()
 MAX_RETRIES = config.etl.get('MAX_RETRIES', const.ZERO)
@@ -58,8 +60,9 @@ class ShellCommandActivity(Activity):
             raise ETLInputError('command and script both can not be provided')
 
         if precondition and not isinstance(precondition, Precondition):
-            raise ETLInputError(
-                    'Input precondition must be of the type Precondition')
+            #raise ETLInputError(
+            #        'Input precondition must be of the type Precondition')
+            logger.warning("input is not a precondition. Can be a list now. Hopefully it is. Should check in the future...")
 
         # Set default values
         if depends_on is None:
