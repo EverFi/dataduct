@@ -5,6 +5,7 @@ Pipeline object class for sns
 from ..config import Config
 from ..utils import constants as const
 from .pipeline_object import PipelineObject
+import json
 
 config = Config()
 SNS_TOPIC_ARN_FAILURE = config.etl.get('SNS_TOPIC_ARN_FAILURE', const.NONE)
@@ -36,25 +37,23 @@ class SNSAlarm(PipelineObject):
 
         if failure:
             if not my_message:
-                my_message = '\n'.join([
-                    'Identifier: ' + pipeline_name,
-                    'Object: #{node.name}',
-                    'Object Scheduled Start Time: #{node.@scheduledStartTime}',
-                    'Error Message: #{node.errorMessage}',
-                    'Error Stack Trace: #{node.errorStackTrace}'
-                ])
-            subject = 'Data Pipeline %s failed' % pipeline_name
+                my_message = json.dumps({ 'pipeline_name': pipeline_name,
+                 'pipeline_object': '#{node.name}',
+                 'schedule_start_time': '#{node.@scheduledStartTime}',
+                 'error_message': '#{node.errorMessage}',
+                 'error_stack_trace': '#{node.errorStackTrace}'
+                })
+            subject = 'Data Pipeline Failed'
         else:
             if not my_message:
-                my_message = '\n'.join([
-                     'Identifier: ' + pipeline_name,
-                     'Object: #{node.name}',
-                     'Object Scheduled Start Time: #{node.@scheduledStartTime}',
-                     'Object Actual Start Time: #{node.@actualStartTime}',
-                     'Object End Time: #{node.@actualEndTime}'
-               ])
-            subject = 'Data Pipeline %s succeeded ' % pipeline_name
-
+                my_message = json.dumps({
+                     'pipeline_name': pipeline_name,
+                     'pipeline_object': '#{node.name}',
+                     'pipeline_object_scheduled_start_time': '#{node.@scheduledStartTime}',
+                     'pipeline_object_actual_start_time': '#{node.@actualStartTime}',
+                     'pipeline_object_actual_end_time': '#{node.@actualEndTime}'
+               })
+            subject = 'Data Pipeline Succeeded'
 
         if topic_arn is None:
             topic_arn = SNS_TOPIC_ARN_FAILURE
