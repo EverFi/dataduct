@@ -3,6 +3,7 @@ ETL step wrapper for RedshiftCopyActivity to load data into Redshift
 """
 from .etl_step import ETLStep
 from ..pipeline import RedshiftNode
+from ..pipeline import Precondition
 from ..pipeline import RedshiftCopyActivity
 
 
@@ -14,7 +15,9 @@ class LoadRedshiftStep(ETLStep):
                  schema,
                  table,
                  redshift_database,
+                 s3_path_precondition=None,
                  insert_mode="TRUNCATE",
+                 delimiter="\t",
                  max_errors=None,
                  replace_invalid_char=None,
                  compression=None,
@@ -46,8 +49,21 @@ class LoadRedshiftStep(ETLStep):
         if avro:
             command_options = ["FORMAT AS AVRO 'auto' TIMEFORMAT 'epochmillisecs' TRUNCATECOLUMNS"]
         else:
-            command_options = ["DELIMITER '\t' ESCAPE TRUNCATECOLUMNS"]
+            command_options = ["DELIMITER '{delimiter}' ESCAPE TRUNCATECOLUMNS".format(delimiter=delimiter)]
             command_options.append("NULL AS 'NULL' ")
+
+        precondition = None
+        if s3_path_precondition:
+            if type(s3_path_precondition) is str:
+                if s3_path_precondition.endswith('/'):
+                    is_directory = True
+                else:
+                    is_directory = False
+                precondition = self.create_pipeline_object(
+                        object_class=Precondition,
+                        is_directory=is_directory,
+                        s3Prefix=s3_path_precondition
+                )
 
         if compression == "gzip":
           command_options.append("GZIP")
@@ -67,6 +83,7 @@ class LoadRedshiftStep(ETLStep):
             object_class=RedshiftCopyActivity,
             max_retries=self.max_retries,
             input_node=self.input,
+            precondition=precondition,
             output_node=self.output,
             insert_mode=insert_mode,
             resource=self.resource,
