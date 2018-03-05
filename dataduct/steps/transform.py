@@ -3,9 +3,11 @@ ETL step wrapper for shell command activity can be executed on Ec2 / EMR
 """
 from ..pipeline import S3Node
 from ..pipeline import ShellCommandActivity
+from ..pipeline import SNSAlarm
 from ..s3 import S3Directory
 from ..s3 import S3File
 from ..s3 import S3Path
+from ..config import Config
 from ..utils import constants as const
 from ..utils.exceptions import ETLInputError
 from ..utils.helpers import exactly_one
@@ -14,9 +16,12 @@ from .etl_step import ETLStep
 
 import logging
 logger = logging.getLogger(__name__)
+config = Config()
 
 SCRIPT_ARGUMENT_TYPE_STRING = 'string'
 SCRIPT_ARGUMENT_TYPE_SQL = 'sql'
+SNS_TOPIC_ARN_SUCCESS = config.etl.get('SNS_TOPIC_ARN_SUCCESS', const.NONE)
+SNS_TOPIC_ARN_FAILURE = config.etl.get('SNS_TOPIC_ARN_FAILURE', const.NONE)
 
 
 class TransformStep(ETLStep):
@@ -35,6 +40,11 @@ class TransformStep(ETLStep):
                  output_path=None,
                  no_output=False,
                  no_input=False,
+                 sns_include_default=False,
+                 sns_success_subject=None,
+                 sns_failure_subject=None,
+                 send_sns=False,
+                 sns_message=None,
                  precondition=None,
                  **kwargs):
         """Constructor for the TransformStep class
@@ -115,6 +125,27 @@ class TransformStep(ETLStep):
         logger.debug(script_arguments)
 
         output_node = None if no_output else base_output_node
+
+        #sns stuff
+        
+        if send_sns:
+            sns_message.update({'step_name': self.get_name()})
+            self._sns_object = self.create_pipeline_object(
+                object_class=SNSAlarm,
+                topic_arn=SNS_TOPIC_ARN_FAILURE,
+                failure_subject=sns_failure_subject,
+                my_message=sns_message,
+                include_default_message=sns_include_default,
+                failure=True,
+            )
+            self._sns_success_object = self.create_pipeline_object(
+                object_class=SNSAlarm,
+                topic_arn=SNS_TOPIC_ARN_SUCCESS,
+                success_subject=sns_success_subject,
+                my_message=sns_message,
+                include_default_message=sns_include_default,
+                failure=False,
+            )
 
         self.create_pipeline_object(
             object_class=ShellCommandActivity,

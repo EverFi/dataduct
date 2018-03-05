@@ -18,42 +18,55 @@ class SNSAlarm(PipelineObject):
 
     def __init__(self,
                  id,
-                 pipeline_name=None,
                  my_message=None,
                  topic_arn=None,
+                 success_subject=None,
+                 failure_subject=None,
+                 include_default_message=False,
                  failure=True,
                  **kwargs):
         """Constructor for the SNSAlarm class
 
         Args:
             id(str): id of the object
-            pipeline_name(str): frequency type for the pipeline
-            my_message(str): Message used in SNS,
+            my_message(dict): Message used in SNS,
             **kwargs(optional): Keyword arguments directly passed to base class
         """
 
-        if not pipeline_name:
-            pipeline_name = "None"
-
-        if failure:
-            if not my_message:
-                my_message = json.dumps({ 'pipeline_name': pipeline_name,
+        default_failure_message = { 
                  'pipeline_object': '#{node.name}',
                  'schedule_start_time': '#{node.@scheduledStartTime}',
                  'error_message': '#{node.errorMessage}',
                  'error_stack_trace': '#{node.errorStackTrace}'
-                })
-            subject = 'Data Pipeline Failed'
+        }
+
+        default_success_message = {
+                 'pipeline_object': '#{node.name}',
+                 'pipeline_object_scheduled_start_time': '#{node.@scheduledStartTime}',
+                 'pipeline_object_actual_start_time': '#{node.@actualStartTime}',
+                 'pipeline_object_actual_end_time': '#{node.@actualEndTime}'
+        }
+
+        if failure:
+            if not my_message:
+                my_message = default_failure_message
+            elif my_message and include_default_message:
+                my_message.update(default_failure_message)
+            if failure_subject:
+                subject=failure_subject
+            else:
+                subject = 'Data Pipeline Failed'
+
         else:
             if not my_message:
-                my_message = json.dumps({
-                     'pipeline_name': pipeline_name,
-                     'pipeline_object': '#{node.name}',
-                     'pipeline_object_scheduled_start_time': '#{node.@scheduledStartTime}',
-                     'pipeline_object_actual_start_time': '#{node.@actualStartTime}',
-                     'pipeline_object_actual_end_time': '#{node.@actualEndTime}'
-               })
-            subject = 'Data Pipeline Succeeded'
+                my_message = default_success_message
+            elif my_message and include_default_message:
+                my_message.update(default_success_message)
+
+            if success_subject:
+                subject=success_subject
+            else:
+                subject = 'Data Pipeline Succeeded'
 
         if topic_arn is None:
             topic_arn = SNS_TOPIC_ARN_FAILURE
