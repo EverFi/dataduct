@@ -4,6 +4,7 @@ Base class for an etl step
 from ..config import Config
 from ..pipeline import Activity
 from ..pipeline import CopyActivity
+from ..pipeline import SNSAlarm
 from ..pipeline import S3Node
 from ..s3 import S3File
 from ..s3 import S3LogPath
@@ -154,10 +155,10 @@ class ETLStep(object):
         if isinstance(new_object, Activity):
             new_object['dependsOn'] = self._required_activities
 
-        if self._sns_object:
+        if self._sns_object and not isinstance(new_object, SNSAlarm):
             new_object['onFail'] = self._sns_object
 
-        if self._sns_success_object:
+        if self._sns_success_object and not isinstance(new_object, SNSAlarm):
             new_object['onSuccess'] = self._sns_success_object
 
         self._objects[object_id] = new_object
