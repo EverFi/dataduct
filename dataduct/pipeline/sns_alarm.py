@@ -9,6 +9,7 @@ import json
 
 config = Config()
 SNS_TOPIC_ARN_FAILURE = config.etl.get('SNS_TOPIC_ARN_FAILURE', const.NONE)
+SNS_TOPIC_ARN_SUCCESS = config.etl.get('SNS_TOPIC_ARN_SUCCESS', const.NONE)
 ROLE = config.etl['ROLE']
 
 
@@ -33,7 +34,7 @@ class SNSAlarm(PipelineObject):
             **kwargs(optional): Keyword arguments directly passed to base class
         """
 
-        default_failure_message = { 
+        default_failure_message = {
                  'pipeline_object': '#{node.name}',
                  'schedule_start_time': '#{node.@scheduledStartTime}',
                  'error_message': '#{node.errorMessage}',
@@ -57,6 +58,9 @@ class SNSAlarm(PipelineObject):
             else:
                 subject = 'Data Pipeline Failed'
 
+            if topic_arn is None:
+                topic_arn = SNS_TOPIC_ARN_FAILURE
+
         else:
             if not my_message:
                 my_message = default_success_message
@@ -68,8 +72,8 @@ class SNSAlarm(PipelineObject):
             else:
                 subject = 'Data Pipeline Succeeded'
 
-        if topic_arn is None:
-            topic_arn = SNS_TOPIC_ARN_FAILURE
+            if topic_arn is None:
+                topic_arn = SNS_TOPIC_ARN_SUCCESS
 
         super(SNSAlarm, self).__init__(
             id=id,
