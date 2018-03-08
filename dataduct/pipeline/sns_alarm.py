@@ -77,5 +77,5 @@ class SNSAlarm(PipelineObject):
             topicArn=topic_arn,
             role=ROLE,
             subject=subject,
-            message=my_message,
+            message=json.dumps(my_message),
         )
