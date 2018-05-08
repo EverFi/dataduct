@@ -220,7 +220,9 @@ class ETLPipeline(object):
             self.sns = self.create_pipeline_object(
                 object_class=SNSAlarm,
                 topic_arn=self.topic_arn,
-                pipeline_name=self.name,
+                my_message={ 'pipeline_name': self.name },
+                include_default_message=True,
+                failure=True,
             )
         if self.topic_arn_success is None:
             self.sns_success = None
@@ -228,7 +230,8 @@ class ETLPipeline(object):
             self.sns_success = self.create_pipeline_object(
                 object_class=SNSAlarm,
                 topic_arn=self.topic_arn_success,
-                pipeline_name=self.name,
+                my_message={ 'pipeline_name': self.name },
+                include_default_message=True,
                 failure=False,
             )
 
