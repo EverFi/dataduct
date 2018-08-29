@@ -4,7 +4,8 @@ Setup file for installation of the dataduct code
 from setuptools import find_packages
 from setuptools import setup
 
-from dataduct import __version__ as version
+execfile('dataduct/__init__.py')
+version = __version__
 
 setup(
     name='dataduct',
