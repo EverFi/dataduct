@@ -10,6 +10,7 @@ import json
 config = Config()
 SNS_TOPIC_ARN_FAILURE = config.etl.get('SNS_TOPIC_ARN_FAILURE', const.NONE)
 SNS_TOPIC_ARN_SUCCESS = config.etl.get('SNS_TOPIC_ARN_SUCCESS', const.NONE)
+SNS_TOPIC_ARN_ONLATE = config.etl.get('SNS_TOPIC_ARN_ONLATE', const.NONE)
 ROLE = config.etl['ROLE']
 
 
@@ -25,6 +26,7 @@ class SNSAlarm(PipelineObject):
                  failure_subject=None,
                  include_default_message=False,
                  failure=True,
+                 onLate=False,
                  **kwargs):
         """Constructor for the SNSAlarm class
 
@@ -70,18 +72,50 @@ class SNSAlarm(PipelineObject):
                  'pipeline_status': '#{node.@status}'
         }
 
-        if failure:
-            if not my_message:
-                my_message = default_failure_message
-            elif my_message and include_default_message:
-                my_message.update(default_failure_message)
-            if failure_subject:
-                subject=failure_subject
-            else:
-                subject = 'Data Pipeline Failed'
+        default_onlate_message = {
+            'pipeline_object': '#{node.name}',
+            'pipeline_object_scheduled_start_time': '#{node.@scheduledStartTime}',
+            'pipeline_object_actual_start_time': '#{node.@actualStartTime}',
+            'pipeline_object_actual_end_time': '#{node.@actualEndTime}',
+            'pipeline_instances': '#{node.@activeInstances}',
+            'pipeline_finished_time': '#{node.@finishedTime}',
+            'pipeline_last_deactivated_time': '#{node.@lastDeactivatedTime}',
+            'pipeline_last_completed_run_time': '#{node.@latestCompletedRunTime}',
+            'pipeline_latest_run_time': '#{node.@latestRunTime}',
+            'pipeline_next_run_time': '#{node.@nextRunTime}',
+            'pipeline_report_progress_time': '#{node.reportProgressTime}',
+            'pipeline_scheduled_end_time': '#{node.@scheduledEndTime}',
+            'pipeline_scheduled_start_time': '#{node.@scheduledStartTime}',
+            'pipeline_version': '#{node.@version}',
+            'pipeline_status': '#{node.@status}'
+        }
 
-            if topic_arn is None:
-                topic_arn = SNS_TOPIC_ARN_FAILURE
+        if failure:
+            if onLate:
+                if not my_message:
+                    my_message = default_failure_message
+                elif my_message and include_default_message:
+                    my_message.update(default_failure_message)
+                if failure_subject:
+                    subject = failure_subject
+                else:
+                    subject = 'Data Pipeline Late'
+
+                if topic_arn is None:
+                    topic_arn = SNS_TOPIC_ARN_ONLATE
+
+            else:
+                if not my_message:
+                    my_message = default_failure_message
+                elif my_message and include_default_message:
+                    my_message.update(default_failure_message)
+                if failure_subject:
+                    subject=failure_subject
+                else:
+                    subject = 'Data Pipeline Failed'
+
+                if topic_arn is None:
+                    topic_arn = SNS_TOPIC_ARN_FAILURE
 
         else:
             if not my_message:

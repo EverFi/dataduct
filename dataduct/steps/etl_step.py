@@ -35,7 +35,7 @@ class ETLStep(object):
                  s3_source_dir=None, schedule=None, resource=None,
                  worker_group=None, input_node=None, input_path=None,
                  required_steps=None, max_retries=MAX_RETRIES, sns_object=None,
-                 sns_success_object=None):
+                 sns_success_object=None, sns_onlate_object=None):
         """Constructor for the ETLStep object
 
         Args:
@@ -64,6 +64,7 @@ class ETLStep(object):
         self._input_node = input_node
         self._sns_object = sns_object
         self._sns_success_object = sns_success_object
+        self._sns_onlate_object = sns_onlate_object
 
         if input_path is not None and input_node is not None:
             raise ETLInputError('Both input_path and input_node specified')
@@ -155,11 +156,15 @@ class ETLStep(object):
         if isinstance(new_object, Activity):
             new_object['dependsOn'] = self._required_activities
 
-        if self._sns_object and not isinstance(new_object, SNSAlarm):
-            new_object['onFail'] = self._sns_object
+            if self._sns_object and not isinstance(new_object, SNSAlarm):
+                new_object['onFail'] = self._sns_object
 
-        if self._sns_success_object and not isinstance(new_object, SNSAlarm):
-            new_object['onSuccess'] = self._sns_success_object
+            if self._sns_success_object and not isinstance(new_object, SNSAlarm):
+                new_object['onSuccess'] = self._sns_success_object
+
+            if self._sns_onlate_object and not isinstance(new_object, SNSAlarm):
+                new_object['onLateAction'] = self._sns_onlate_object
+                new_object['lateAfterTimeout'] = '15 minutes'
 
         self._objects[object_id] = new_object
         return new_object
