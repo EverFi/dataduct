@@ -99,6 +99,8 @@ class ETLPipeline(object):
         if time_delta is None:
             time_delta = timedelta(seconds=0)
 
+        #print "ONLATETOPIC" + topic_arn_success
+
         # Input variables
         self._name = name if not NAME_PREFIX else NAME_PREFIX + '_' + name
         self.frequency = frequency
@@ -125,7 +127,7 @@ class ETLPipeline(object):
         if topic_arn_onlate is not None:
             self.topic_arn_onlate = topic_arn_onlate
         elif self.DEFAULT_TOPIC_ARN_ONLATE:
-            self.topic_arn_onlatess = self.DEFAULT_TOPIC_ARN_ONLATE
+            self.topic_arn_onlate = self.DEFAULT_TOPIC_ARN_ONLATE
         else:
             self.topic_arn_onlate = None
 
