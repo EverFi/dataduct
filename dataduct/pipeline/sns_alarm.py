@@ -38,14 +38,31 @@ class SNSAlarm(PipelineObject):
                  'pipeline_object': '#{node.name}',
                  'schedule_start_time': '#{node.@scheduledStartTime}',
                  'error_message': '#{node.errorMessage}',
-                 'error_stack_trace': '#{node.errorStackTrace}'
+                 'error_stack_trace': '#{node.errorStackTrace}',
+                 'pipeline_last_deactivated_time': '#{node.@lastDeactivatedTime}',
+                 'pipeline_last_completed_run_time': '#{node.@latestCompletedRunTime}',
+                 'pipeline_latest_run_time': '#{node.@latestRunTime}',
+                 'pipeline_next_run_time': '#{node.@nextRunTime}',
+                 'pipeline_next_run_time': '#{node.@cascadeFailedOn}',
+                 'pipeline_error_id': '#{node.errorId}'
         }
 
         default_success_message = {
                  'pipeline_object': '#{node.name}',
                  'pipeline_object_scheduled_start_time': '#{node.@scheduledStartTime}',
                  'pipeline_object_actual_start_time': '#{node.@actualStartTime}',
-                 'pipeline_object_actual_end_time': '#{node.@actualEndTime}'
+                 'pipeline_object_actual_end_time': '#{node.@actualEndTime}',
+                 'pipeline_instances': '#{node.@activeInstances}',
+                 'pipeline_finished_time': '#{node.@finishedTime}',
+                 'pipeline_last_deactivated_time': '#{node.@lastDeactivatedTime}',
+                 'pipeline_last_completed_run_time': '#{node.@latestCompletedRunTime}',
+                 'pipeline_latest_run_time': '#{node.@latestRunTime}',
+                 'pipeline_next_run_time': '#{node.@nextRunTime}',
+                 'pipeline_report_progress_time': '#{node.reportProgressTime}',
+                 'pipeline_scheduled_end_time': '#{node.@scheduledEndTime}',
+                 'pipeline_scheduled_start_time': '#{node.@scheduledStartTime}',
+                 'pipeline_version': '#{node.@version}',
+                 'pipeline_status': '#{node.@status}'
         }
 
         if failure:
