@@ -47,6 +47,7 @@ MAX_RETRIES = config.etl.get('MAX_RETRIES', const.ZERO)
 S3_BASE_PATH = config.etl.get('S3_BASE_PATH', const.EMPTY_STR)
 SNS_TOPIC_ARN_FAILURE = config.etl.get('SNS_TOPIC_ARN_FAILURE', const.NONE)
 SNS_TOPIC_ARN_SUCCESS = config.etl.get('SNS_TOPIC_ARN_SUCCESS', const.NONE)
+SNS_TOPIC_ARN_ONLATE = config.etl.get('SNS_TOPIC_ARN_ONLATE', const.NONE)
 NAME_PREFIX = config.etl.get('NAME_PREFIX', const.EMPTY_STR)
 QA_LOG_PATH = config.etl.get('QA_LOG_PATH', const.QA_STR)
 DP_INSTANCE_LOG_PATH = config.etl.get('DP_INSTANCE_LOG_PATH', const.NONE)
@@ -71,11 +72,12 @@ class ETLPipeline(object):
     # easier
     DEFAULT_TOPIC_ARN = config.etl.get('DEFAULT_TOPIC_ARN', const.NONE)
     DEFAULT_TOPIC_ARN_SUCCESS = config.etl.get('DEFAULT_TOPIC_ARN_SUCCESS', const.NONE)
+    DEFAULT_TOPIC_ARN_ONLATE = config.etl.get('DEFAULT_TOPIC_ARN_ONLATE', const.NONE)
 
     def __init__(self, name, frequency='one-time', ec2_resource_config=None,
                  time_delta=None, emr_cluster_config=None, load_time=None,
                  topic_arn=None, max_retries=MAX_RETRIES, teardown=None,
-                 bootstrap=None, description=None, topic_arn_success=None):
+                 bootstrap=None, description=None, topic_arn_success=None, topic_arn_onlate=None):
         """Constructor for the pipeline class
 
         Args:
@@ -119,6 +121,13 @@ class ETLPipeline(object):
             self.topic_arn_success = self.DEFAULT_TOPIC_ARN_SUCCESS
         else:
             self.topic_arn_success = None
+
+        if topic_arn_onlate is not None:
+            self.topic_arn_onlate = topic_arn_onlate
+        elif self.DEFAULT_TOPIC_ARN_ONLATE:
+            self.topic_arn_onlatess = self.DEFAULT_TOPIC_ARN_ONLATE
+        else:
+            self.topic_arn_onlate = None
 
         if bootstrap is not None:
             self.bootstrap_definitions = bootstrap
@@ -223,6 +232,7 @@ class ETLPipeline(object):
                 my_message={ 'pipeline_name': self.name },
                 include_default_message=True,
                 failure=True,
+                onlate=False,
             )
         if self.topic_arn_success is None:
             self.sns_success = None
@@ -233,6 +243,19 @@ class ETLPipeline(object):
                 my_message={ 'pipeline_name': self.name },
                 include_default_message=True,
                 failure=False,
+                onlate=False,
+            )
+
+        if self.topic_arn_success is None:
+            self.sns_onlate = None
+        else:
+            self.sns_onlate = self.create_pipeline_object(
+                object_class=SNSAlarm,
+                topic_arn=self.topic_arn_success,
+                my_message={ 'pipeline_name': self.name },
+                include_default_message=True,
+                failure=True,
+                onlate=True,
             )
 
         self.default = self.create_pipeline_object(
@@ -559,10 +582,12 @@ class ETLPipeline(object):
                     'input_path' not in step_param:
                 step_param['input_node'] = input_node
 
-            if is_teardown:
-                step_param['sns_object'] = self.sns
+            if is_teardown :
                 step_param['sns_success_object'] = self.sns_success
                 step_param['name'] = "Teardown"
+
+            step_param['sns_object'] = self.sns
+            step_param['sns_onlate_object'] = self.sns_onlate
 
             try:
                 step_class = step_param.pop('step_class')
