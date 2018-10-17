@@ -37,6 +37,8 @@ class SNSAlarm(PipelineObject):
         default_failure_message = {
                  'pipeline_object': '#{node.name}',
                  'schedule_start_time': '#{node.@scheduledStartTime}',
+                 'pipeline_object_actual_start_time': '#{node.@actualStartTime}',
+                 'pipeline_object_actual_end_time': '#{node.@actualEndTime}',
                  'error_message': '#{node.errorMessage}',
                  'error_stack_trace': '#{node.errorStackTrace}',
                  'pipeline_last_deactivated_time': '#{node.@lastDeactivatedTime}',
@@ -44,7 +46,8 @@ class SNSAlarm(PipelineObject):
                  'pipeline_latest_run_time': '#{node.@latestRunTime}',
                  'pipeline_next_run_time': '#{node.@nextRunTime}',
                  'pipeline_next_run_time': '#{node.@cascadeFailedOn}',
-                 'pipeline_error_id': '#{node.errorId}'
+                 'pipeline_error_id': '#{node.errorId}',
+                 'pipeline_status': '#{node.@status}'
         }
 
         default_success_message = {
