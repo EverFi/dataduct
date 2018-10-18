@@ -47,7 +47,7 @@ class SNSAlarm(PipelineObject):
                  'pipeline_last_completed_run_time': '#{node.@latestCompletedRunTime}',
                  'pipeline_latest_run_time': '#{node.@latestRunTime}',
                  'pipeline_next_run_time': '#{node.@nextRunTime}',
-                 'pipeline_next_run_time': '#{node.@cascadeFailedOn}',
+                 'pipeline_cascade_fail_origin': '#{node.@cascadeFailedOn}',
                  'pipeline_error_id': '#{node.errorId}',
                  'pipeline_status': '#{node.@status}'
         }
