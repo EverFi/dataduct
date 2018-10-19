@@ -248,12 +248,12 @@ class ETLPipeline(object):
                 onlate=False,
             )
 
-        if self.topic_arn_success is None:
+        if self.topic_arn_onlate is None:
             self.sns_onlate = None
         else:
             self.sns_onlate = self.create_pipeline_object(
                 object_class=SNSAlarm,
-                topic_arn=self.topic_arn_success,
+                topic_arn=self.topic_arn_onlate,
                 my_message={ 'pipeline_name': self.name },
                 include_default_message=True,
                 failure=True,

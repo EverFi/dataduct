@@ -14,6 +14,7 @@ from ..utils.exceptions import ETLInputError
 
 config = Config()
 MAX_RETRIES = config.etl.get('MAX_RETRIES', const.ZERO)
+ONLATE_TIMEOUT = const.FREQUENCY_PERIOD_CONVERSION[config.etl.get('ONLATE_TIMEOUT', const.DEFAULT_ONLATE_TIMEOUT)][0]
 
 
 class ETLStep(object):
@@ -164,7 +165,7 @@ class ETLStep(object):
 
             if self._sns_onlate_object and not isinstance(new_object, SNSAlarm):
                 new_object['onLateAction'] = self._sns_onlate_object
-                new_object['lateAfterTimeout'] = '15 minutes'
+                new_object['lateAfterTimeout'] = ONLATE_TIMEOUT
 
         self._objects[object_id] = new_object
         return new_object
