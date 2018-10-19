@@ -99,7 +99,7 @@ class SNSAlarm(PipelineObject):
                 if failure_subject:
                     subject = failure_subject
                 else:
-                    subject = 'Data Pipeline Late'
+                    subject = 'Data Pipeline delayed'
 
                 if topic_arn is None:
                     topic_arn = SNS_TOPIC_ARN_ONLATE

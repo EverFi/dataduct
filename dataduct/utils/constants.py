@@ -60,6 +60,7 @@ FREQUENCY_PERIOD_CONVERSION = {
     '4-days': ('4 days', None),
     '5-days': ('5 days', None),
     '6-days': ('6 days', None),
+    '15-minutes': ('15 minutes', None),
     'hourly': ('1 hour', None),
     '1-hour': ('1 hour', None),
     '2-hours': ('2 hours', None),
@@ -73,3 +74,5 @@ FREQUENCY_PERIOD_CONVERSION = {
 }
 
 DEFAULT_ATTEMPT_TIMEOUT = '1-hour'
+DEFAULT_ONLATE_TIMEOUT = '15-minutes'
+
