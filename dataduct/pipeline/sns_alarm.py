@@ -91,9 +91,9 @@ class SNSAlarm(PipelineObject):
         if failure:
             if onLate:
                 if not my_message:
-                    my_message = default_failure_message
+                    my_message = default_onlate_message
                 elif my_message and include_default_message:
-                    my_message.update(default_failure_message)
+                    my_message.update(default_onlate_message)
                 if failure_subject:
                     subject = failure_subject
                 else:

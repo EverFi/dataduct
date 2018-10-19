@@ -588,6 +588,7 @@ class ETLPipeline(object):
                 step_param['sns_success_object'] = self.sns_success
                 step_param['name'] = "Teardown"
 
+            # Default messages.
             step_param['sns_object'] = self.sns
             step_param['sns_onlate_object'] = self.sns_onlate
 
