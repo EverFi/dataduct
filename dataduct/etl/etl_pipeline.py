@@ -234,7 +234,7 @@ class ETLPipeline(object):
                 my_message={ 'pipeline_name': self.name },
                 include_default_message=True,
                 failure=True,
-                onlate=False,
+                onLate=False,
             )
         if self.topic_arn_success is None:
             self.sns_success = None
@@ -245,7 +245,7 @@ class ETLPipeline(object):
                 my_message={ 'pipeline_name': self.name },
                 include_default_message=True,
                 failure=False,
-                onlate=False,
+                onLate=False,
             )
 
         if self.topic_arn_onlate is None:
@@ -257,7 +257,7 @@ class ETLPipeline(object):
                 my_message={ 'pipeline_name': self.name },
                 include_default_message=True,
                 failure=True,
-                onlate=True,
+                onLate=True,
             )
 
         self.default = self.create_pipeline_object(

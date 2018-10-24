@@ -37,6 +37,7 @@ class SNSAlarm(PipelineObject):
         """
 
         default_failure_message = {
+                 'message.type' : 'failure',
                  'pipeline_object': '#{node.name}',
                  'schedule_start_time': '#{node.@scheduledStartTime}',
                  'pipeline_object_actual_start_time': '#{node.@actualStartTime}',
@@ -53,6 +54,7 @@ class SNSAlarm(PipelineObject):
         }
 
         default_success_message = {
+                 'message.type': 'success',
                  'pipeline_object': '#{node.name}',
                  'pipeline_object_scheduled_start_time': '#{node.@scheduledStartTime}',
                  'pipeline_object_actual_start_time': '#{node.@actualStartTime}',
@@ -71,6 +73,7 @@ class SNSAlarm(PipelineObject):
         }
 
         default_onlate_message = {
+            'message.type': 'onlate',
             'pipeline_object': '#{node.name}',
             'pipeline_object_scheduled_start_time': '#{node.@scheduledStartTime}',
             'pipeline_object_actual_start_time': '#{node.@actualStartTime}',
@@ -97,7 +100,7 @@ class SNSAlarm(PipelineObject):
                 if failure_subject:
                     subject = failure_subject
                 else:
-                    subject = 'Data Pipeline delayed'
+                    subject = 'Data Pipeline Delayed'
 
                 if topic_arn is None:
                     topic_arn = SNS_TOPIC_ARN_ONLATE
