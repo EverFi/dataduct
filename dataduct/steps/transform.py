@@ -48,6 +48,7 @@ class TransformStep(ETLStep):
                  send_sns=False,
                  sns_message=None,
                  precondition=None,
+                 topic_arn=None,
                  **kwargs):
         """Constructor for the TransformStep class
 

@@ -77,7 +77,7 @@ class ETLPipeline(object):
     def __init__(self, name, frequency='one-time', ec2_resource_config=None,
                  time_delta=None, emr_cluster_config=None, load_time=None,
                  topic_arn=None, max_retries=MAX_RETRIES, teardown=None,
-                 bootstrap=None, description=None, topic_arn_success=None, topic_arn_onlate=None):
+                 bootstrap=None, description=None, topic_arn_success=None, topic_arn_onlate=None, onlate_timeout=None):
         """Constructor for the pipeline class
 
         Args:
@@ -98,8 +98,6 @@ class ETLPipeline(object):
 
         if time_delta is None:
             time_delta = timedelta(seconds=0)
-
-        #print "ONLATETOPIC" + topic_arn_success
 
         # Input variables
         self._name = name if not NAME_PREFIX else NAME_PREFIX + '_' + name
@@ -124,12 +122,21 @@ class ETLPipeline(object):
         else:
             self.topic_arn_success = None
 
-        if topic_arn_onlate is not None:
-            self.topic_arn_onlate = topic_arn_onlate
-        elif self.DEFAULT_TOPIC_ARN_ONLATE:
-            self.topic_arn_onlate = self.DEFAULT_TOPIC_ARN_ONLATE
+        if onlate_timeout is not None:
+            self.onlate_timeout = onlate_timeout
+            if topic_arn_onlate is not None:
+                self.topic_arn_onlate = topic_arn_onlate
+            elif self.DEFAULT_TOPIC_ARN_ONLATE:
+                logger.warn("Pipeline ARN doesn't found. Using default topic ARN for delay alerts.")
+                self.topic_arn_onlate = self.DEFAULT_TOPIC_ARN_ONLATE
+            else:
+                logger.info("Default ARN for delay alert doesn't found. Delay alert has been disabled")
+                self.topic_arn_onlate = None
+                self.onlate_timeout = None
         else:
+            logger.warn("No 'onlate_timeout' has been configured. Delay alert has been disabled")
             self.topic_arn_onlate = None
+            self.onlate_timeout = None
 
         if bootstrap is not None:
             self.bootstrap_definitions = bootstrap
@@ -228,6 +235,7 @@ class ETLPipeline(object):
         if self.topic_arn is None and SNS_TOPIC_ARN_FAILURE is None:
             self.sns = None
         else:
+            logger.debug('Creation of new SNSAlarm for onFailure')
             self.sns = self.create_pipeline_object(
                 object_class=SNSAlarm,
                 topic_arn=self.topic_arn,
@@ -239,6 +247,7 @@ class ETLPipeline(object):
         if self.topic_arn_success is None:
             self.sns_success = None
         else:
+            logger.debug('Creation of new SNSAlarm for onSucess')
             self.sns_success = self.create_pipeline_object(
                 object_class=SNSAlarm,
                 topic_arn=self.topic_arn_success,
@@ -251,6 +260,7 @@ class ETLPipeline(object):
         if self.topic_arn_onlate is None:
             self.sns_onlate = None
         else:
+            logger.debug('Creation of new SNSAlarm for onLateAction')
             self.sns_onlate = self.create_pipeline_object(
                 object_class=SNSAlarm,
                 topic_arn=self.topic_arn_onlate,
@@ -258,6 +268,7 @@ class ETLPipeline(object):
                 include_default_message=True,
                 failure=True,
                 onLate=True,
+                onlate_timeout=self.onlate_timeout
             )
 
         self.default = self.create_pipeline_object(
@@ -586,11 +597,12 @@ class ETLPipeline(object):
 
             if is_teardown :
                 step_param['sns_success_object'] = self.sns_success
+                step_param['sns_onlate_object'] = self.sns_onlate
+                step_param['onlate_timeout'] = self.onlate_timeout
                 step_param['name'] = "Teardown"
 
             # Default messages.
             step_param['sns_object'] = self.sns
-            step_param['sns_onlate_object'] = self.sns_onlate
 
             try:
                 step_class = step_param.pop('step_class')
