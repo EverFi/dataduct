@@ -127,10 +127,10 @@ class ETLPipeline(object):
             if topic_arn_onlate is not None:
                 self.topic_arn_onlate = topic_arn_onlate
             elif self.DEFAULT_TOPIC_ARN_ONLATE:
-                logger.warn("Pipeline ARN doesn't found. Using default topic ARN for delay alerts.")
+                logger.warn("Pipeline ARN not found. Using default topic ARN for delay alerts.")
                 self.topic_arn_onlate = self.DEFAULT_TOPIC_ARN_ONLATE
             else:
-                logger.info("Default ARN for delay alert doesn't found. Delay alert has been disabled")
+                logger.info("Default ARN for delay alert not found. Delay alert has been disabled")
                 self.topic_arn_onlate = None
                 self.onlate_timeout = None
         else:
