@@ -22,7 +22,7 @@ SCRIPT_ARGUMENT_TYPE_STRING = 'string'
 SCRIPT_ARGUMENT_TYPE_SQL = 'sql'
 SNS_TOPIC_ARN_SUCCESS = config.etl.get('SNS_TOPIC_ARN_SUCCESS', const.NONE)
 SNS_TOPIC_ARN_FAILURE = config.etl.get('SNS_TOPIC_ARN_FAILURE', const.NONE)
-SNS_TOPIC_ARN_LATEACTION = config.etl.get('SNS_TOPIC_ARN_LATEACTION', const.NONE)
+SNS_TOPIC_ARN_ONLATE = config.etl.get('SNS_TOPIC_ARN_ONLATE', const.NONE)
 
 
 class TransformStep(ETLStep):
@@ -153,7 +153,7 @@ class TransformStep(ETLStep):
 
             self._sns_onlate_object = self.create_pipeline_object(
                 object_class=SNSAlarm,
-                topic_arn=SNS_TOPIC_ARN_LATEACTION,
+                topic_arn=SNS_TOPIC_ARN_ONLATE,
                 success_subject=sns_onlate_subject,
                 my_message=sns_message,
                 include_default_message=sns_include_default,

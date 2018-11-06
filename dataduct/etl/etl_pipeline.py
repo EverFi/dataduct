@@ -129,10 +129,6 @@ class ETLPipeline(object):
             elif self.DEFAULT_TOPIC_ARN_ONLATE:
                 logger.warn("Pipeline ARN not found. Using default topic ARN for delay alerts.")
                 self.topic_arn_onlate = self.DEFAULT_TOPIC_ARN_ONLATE
-            else:
-                logger.info("Default ARN for delay alert not found. Delay alert has been disabled")
-                self.topic_arn_onlate = None
-                self.onlate_timeout = None
         else:
             logger.warn("No 'onlate_timeout' has been configured. Delay alert has been disabled")
             self.topic_arn_onlate = None
@@ -232,9 +228,12 @@ class ETLPipeline(object):
             load_hour=self.load_hour,
             load_minutes=self.load_min,
         )
-        if self.topic_arn is None and SNS_TOPIC_ARN_FAILURE is None:
-            self.sns = None
-        else:
+
+        # DEFAULT_TOPIC_ARN is None
+        if self.topic_arn is None:
+            # ARN for current environment is none too?
+            self.topic_arn = SNS_TOPIC_ARN_FAILURE
+        if self.topic_arn:
             logger.debug('Creation of new SNSAlarm for onFailure')
             self.sns = self.create_pipeline_object(
                 object_class=SNSAlarm,
@@ -244,9 +243,14 @@ class ETLPipeline(object):
                 failure=True,
                 onLate=False,
             )
-        if self.topic_arn_success is None:
-            self.sns_success = None
         else:
+            self.topic_arn = None
+
+        # DEFAULT_TOPIC_ARN_SUCCESS
+        if self.topic_arn_success is None:
+            # ARN for current environment is none too?
+            self.topic_arn_success = SNS_TOPIC_ARN_SUCCESS
+        if self.topic_arn_success:
             logger.debug('Creation of new SNSAlarm for onSucess')
             self.sns_success = self.create_pipeline_object(
                 object_class=SNSAlarm,
@@ -256,10 +260,14 @@ class ETLPipeline(object):
                 failure=False,
                 onLate=False,
             )
-
-        if self.topic_arn_onlate is None:
-            self.sns_onlate = None
         else:
+            self.sns_success = None
+
+        # DEFAULT_TOPIC_ARN_ONLATE
+        if self.topic_arn_onlate is None:
+            # ARN for current environment is none too?
+            self.topic_arn_onlate = SNS_TOPIC_ARN_ONLATE
+        if self.topic_arn_onlate and self.onlate_timeout:
             logger.debug('Creation of new SNSAlarm for onLateAction')
             self.sns_onlate = self.create_pipeline_object(
                 object_class=SNSAlarm,
@@ -270,6 +278,10 @@ class ETLPipeline(object):
                 onLate=True,
                 onlate_timeout=self.onlate_timeout
             )
+        else:
+            logger.info("Default ARN for delay alert not found. Delay alert has been disabled")
+            self.topic_arn_onlate = None
+            self.onlate_timeout = None
 
         self.default = self.create_pipeline_object(
             object_class=DefaultObject,
