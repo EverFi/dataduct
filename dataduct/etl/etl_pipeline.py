@@ -107,6 +107,9 @@ class ETLPipeline(object):
         self.time_delta = time_delta
         self.description = description
         self.max_retries = max_retries
+        self.sns = None
+        self.sns_success = None
+        self.sns_onlate = None
 
         if topic_arn is not None:
             self.topic_arn = topic_arn
