@@ -167,7 +167,7 @@ class TransformStep(ETLStep):
                 self._sns_onlate_object = self.create_pipeline_object(
                     object_class=SNSAlarm,
                     topic_arn=SNS_TOPIC_ARN_ONLATE,
-                    success_subject=sns_onlate_subject,
+                    onlate_subject=sns_onlate_subject,
                     my_message=sns_message,
                     include_default_message=sns_include_default,
                     failure=True,

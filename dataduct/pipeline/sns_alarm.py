@@ -24,6 +24,7 @@ class SNSAlarm(PipelineObject):
                  topic_arn=None,
                  success_subject=None,
                  failure_subject=None,
+                 onlate_subject=None,
                  include_default_message=False,
                  failure=True,
                  onLate=False,
@@ -99,8 +100,8 @@ class SNSAlarm(PipelineObject):
                     my_message = default_onlate_message
                 elif my_message and include_default_message:
                     my_message.update(default_onlate_message)
-                if failure_subject:
-                    subject = failure_subject
+                if onlate_subject:
+                    subject = onlate_subject
                 else:
                     subject = 'Data Pipeline Delayed'
 
