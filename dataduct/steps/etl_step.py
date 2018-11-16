@@ -44,6 +44,10 @@ class ETLStep(object):
             unique_id (str): Unique id for the pipeline
             name (str): Name of the pipeline (optional)
             pipeline_id (str): Id assigned by AWS and looks like df-xyz
+            sns_object(object): default None. SNS object for failure action
+            sns_success_object(object): default None. SNS object for success action
+            sns_onlate_object(object): default None. SNS object for onlate action
+            onlate_timeout(str): default None. Time elapsed when the pipeline should consider "late", considering it's scheduled time. Value should represent one of the keys defined in dataduct/utils/constants.py:52.
 
         Note:
             If pipelineId is provided we don't need name or unique_id
@@ -71,7 +75,7 @@ class ETLStep(object):
         #
         if onlate_timeout:
             onlate_timeout = const.FREQUENCY_PERIOD_CONVERSION[onlate_timeout][0]
-        self._onlate_timeout = onlate_timeout
+            self._onlate_timeout = onlate_timeout
 
         if input_path is not None and input_node is not None:
             raise ETLInputError('Both input_path and input_node specified')
@@ -171,7 +175,7 @@ class ETLStep(object):
                 logger.debug('Set sucess alarm to activity %s' % (self.id))
                 new_object['onSuccess'] = self._sns_success_object
 
-            if self._onlate_timeout and self._sns_onlate_object and not isinstance(new_object, SNSAlarm):
+            if hasattr(self, '_onlate_timeout') and self._onlate_timeout and self._sns_onlate_object and not isinstance(new_object, SNSAlarm):
                 logger.debug('Set delay alarm to activity %s' % (self.id))
                 new_object['onLateAction'] = self._sns_onlate_object
                 new_object['lateAfterTimeout'] = self._onlate_timeout

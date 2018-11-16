@@ -46,9 +46,11 @@ class TransformStep(ETLStep):
                  sns_failure_subject=None,
                  sns_onlate_subject=None,
                  send_sns=False,
+                 send_sns_success=True,
+                 send_sns_late=True,
+                 send_sns_fail=True,
                  sns_message=None,
                  precondition=None,
-                 topic_arn=None,
                  **kwargs):
         """Constructor for the TransformStep class
 
@@ -63,6 +65,15 @@ class TransformStep(ETLStep):
             output_path(str): the S3 path to output data
             no_output(bool): whether the script outputs anything to s3
             no_input(bool): whether the script takes any inputs
+            sns_include_default(bool): default false.  whether default message should be appended to the one specified by the pipeline (default message is different for each action - see dataduct/pipeline/sns_alarm.py:38)
+            sns_success_subject(str): default None. subject defined for sns success action, if None a default subject will be defined later on dataduct/pipeline/sns_alarm.py:130
+            sns_failure_subject(str): default None. subject defined for sns failure action, if None a default subject will be defined later on dataduct/pipeline/sns_alarm.py:116
+            sns_onlate_subject(str): default None. subject defined for sns onlate action, if None a default subject will be defined later on dataduct/pipeline/sns_alarm.py:103
+            send_sns(bool): default False. whether SNS action should be sent for any of the possible events (success, failure, late)
+            send_sns_success(bool): default True. whether SNS action should be sent for success action. if true "send_sns" should be set to true
+            send_sns_late(bool): default True. whether SNS action should be sent for late action. if true "send_sns" should be set to true
+            send_sns_fail(bool): default True. whether SNS action should be sent for fail action. if true "send_sns" should be set to true
+            sns_message(str): default None. Message to be sent on all sns notifications. Mandatory if send_sns=True
             **kwargs(optional): Keyword arguments directly passed to base class
         """
         super(TransformStep, self).__init__(**kwargs)
@@ -130,36 +141,38 @@ class TransformStep(ETLStep):
         output_node = None if no_output else base_output_node
 
         #sns stuff
-        
+
         if send_sns:
             sns_message.update({'step_name': self.get_name()})
-            self._sns_object = self.create_pipeline_object(
-                object_class=SNSAlarm,
-                topic_arn=SNS_TOPIC_ARN_FAILURE,
-                failure_subject=sns_failure_subject,
-                my_message=sns_message,
-                include_default_message=sns_include_default,
-                failure=True,
-                onlate=False,
-            )
-            self._sns_success_object = self.create_pipeline_object(
-                object_class=SNSAlarm,
-                topic_arn=SNS_TOPIC_ARN_SUCCESS,
-                success_subject=sns_success_subject,
-                my_message=sns_message,
-                include_default_message=sns_include_default,
-                failure=False,
-            )
-
-            self._sns_onlate_object = self.create_pipeline_object(
-                object_class=SNSAlarm,
-                topic_arn=SNS_TOPIC_ARN_ONLATE,
-                success_subject=sns_onlate_subject,
-                my_message=sns_message,
-                include_default_message=sns_include_default,
-                failure=True,
-                onlate=True,
-            )
+            if send_sns_fail:
+                self._sns_object = self.create_pipeline_object(
+                    object_class=SNSAlarm,
+                    topic_arn=SNS_TOPIC_ARN_FAILURE,
+                    failure_subject=sns_failure_subject,
+                    my_message=sns_message,
+                    include_default_message=sns_include_default,
+                    failure=True,
+                    onlate=False,
+                )
+            if send_sns_success:
+                self._sns_success_object = self.create_pipeline_object(
+                    object_class=SNSAlarm,
+                    topic_arn=SNS_TOPIC_ARN_SUCCESS,
+                    success_subject=sns_success_subject,
+                    my_message=sns_message,
+                    include_default_message=sns_include_default,
+                    failure=False,
+                )
+            if send_sns_late:
+                self._sns_onlate_object = self.create_pipeline_object(
+                    object_class=SNSAlarm,
+                    topic_arn=SNS_TOPIC_ARN_ONLATE,
+                    success_subject=sns_onlate_subject,
+                    my_message=sns_message,
+                    include_default_message=sns_include_default,
+                    failure=True,
+                    onLate=True,
+                )
 
         self.create_pipeline_object(
             object_class=ShellCommandActivity,
