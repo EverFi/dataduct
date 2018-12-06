@@ -38,14 +38,17 @@ class SNSAlarm(PipelineObject):
                  'pipeline_object': '#{node.name}',
                  'schedule_start_time': '#{node.@scheduledStartTime}',
                  'error_message': '#{node.errorMessage}',
-                 'error_stack_trace': '#{node.errorStackTrace}'
+                 'error_stack_trace': '#{node.errorStackTrace}',
+                 'pipeline_id': '#{node.@pipelineId}'
+
         }
 
         default_success_message = {
                  'pipeline_object': '#{node.name}',
                  'pipeline_object_scheduled_start_time': '#{node.@scheduledStartTime}',
                  'pipeline_object_actual_start_time': '#{node.@actualStartTime}',
-                 'pipeline_object_actual_end_time': '#{node.@actualEndTime}'
+                 'pipeline_object_actual_end_time': '#{node.@actualEndTime}',
+                 'pipeline_id': '#{node.@pipelineId}'
         }
 
         if failure:
