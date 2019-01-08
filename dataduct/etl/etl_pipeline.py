@@ -77,7 +77,7 @@ class ETLPipeline(object):
     def __init__(self, name, frequency='one-time', ec2_resource_config=None,
                  time_delta=None, emr_cluster_config=None, load_time=None,
                  topic_arn=None, max_retries=MAX_RETRIES, teardown=None,
-                 bootstrap=None, description=None, topic_arn_success=None, topic_arn_onlate=None, onlate_timeout=None, teardown_send_sns_late=True):
+                 bootstrap=None, description=None, topic_arn_success=None, topic_arn_onlate=None, onlate_timeout=None, teardown_send_sns_late=False):
         """Constructor for the pipeline class
 
         Args:
@@ -92,7 +92,7 @@ class ETLPipeline(object):
             topic_arn_success(str): default None. sns alert to be used by the pipeline when it succeeds
             topic_arn_onlate(str): default None. sns alert to be used by the pipeline when it delays. onlate_timeout should be defined in order to trigger the alert.
             onlate_timeout(str): default None. Time elapsed when the pipeline should consider "late", considering it's scheduled time. Value should represent one of the keys defined in dataduct/utils/constants.py:52.
-            teardown_send_sns_late(bool): default True. whether onlateaction should be triggered on teardown. If true, onlate_timeout should be defined in order to trigger the alert.
+            teardown_send_sns_late(bool): default False. whether onlateaction should be triggered on teardown. If true, onlate_timeout should be defined in order to trigger the alert.
         """
         if load_time and isinstance(load_time, str):
             load_hour, load_min = [int(x) for x in load_time.split(':')]
