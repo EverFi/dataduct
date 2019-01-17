@@ -12,9 +12,11 @@ from ..s3 import S3Path
 from ..utils import constants as const
 from ..utils.exceptions import ETLInputError
 
+import logging
+logger = logging.getLogger(__name__)
+
 config = Config()
 MAX_RETRIES = config.etl.get('MAX_RETRIES', const.ZERO)
-
 
 class ETLStep(object):
     """ETL step class with activities and metadata.
@@ -35,13 +37,17 @@ class ETLStep(object):
                  s3_source_dir=None, schedule=None, resource=None,
                  worker_group=None, input_node=None, input_path=None,
                  required_steps=None, max_retries=MAX_RETRIES, sns_object=None,
-                 sns_success_object=None):
+                 sns_success_object=None, sns_onlate_object=None, onlate_timeout=None):
         """Constructor for the ETLStep object
 
         Args:
             unique_id (str): Unique id for the pipeline
             name (str): Name of the pipeline (optional)
             pipeline_id (str): Id assigned by AWS and looks like df-xyz
+            sns_object(object): default None. SNS object for failure action
+            sns_success_object(object): default None. SNS object for success action
+            sns_onlate_object(object): default None. SNS object for onlate action
+            onlate_timeout(str): default None. Time elapsed when the pipeline should consider "late", considering it's scheduled time. Value should represent one of the keys defined in dataduct/utils/constants.py:52.
 
         Note:
             If pipelineId is provided we don't need name or unique_id
@@ -64,6 +70,12 @@ class ETLStep(object):
         self._input_node = input_node
         self._sns_object = sns_object
         self._sns_success_object = sns_success_object
+        self._sns_onlate_object = sns_onlate_object
+
+        #
+        if onlate_timeout:
+            onlate_timeout = const.FREQUENCY_PERIOD_CONVERSION[onlate_timeout][0]
+            self._onlate_timeout = onlate_timeout
 
         if input_path is not None and input_node is not None:
             raise ETLInputError('Both input_path and input_node specified')
@@ -155,11 +167,18 @@ class ETLStep(object):
         if isinstance(new_object, Activity):
             new_object['dependsOn'] = self._required_activities
 
-        if self._sns_object and not isinstance(new_object, SNSAlarm):
-            new_object['onFail'] = self._sns_object
+            if self._sns_object and not isinstance(new_object, SNSAlarm):
+                logger.debug('Set failure alarm to activity %s' % (self.id))
+                new_object['onFail'] = self._sns_object
 
-        if self._sns_success_object and not isinstance(new_object, SNSAlarm):
-            new_object['onSuccess'] = self._sns_success_object
+            if self._sns_success_object and not isinstance(new_object, SNSAlarm):
+                logger.debug('Set sucess alarm to activity %s' % (self.id))
+                new_object['onSuccess'] = self._sns_success_object
+
+            if hasattr(self, '_onlate_timeout') and self._onlate_timeout and self._sns_onlate_object and not isinstance(new_object, SNSAlarm):
+                logger.debug('Set delay alarm to activity %s' % (self.id))
+                new_object['onLateAction'] = self._sns_onlate_object
+                new_object['lateAfterTimeout'] = self._onlate_timeout
 
         self._objects[object_id] = new_object
         return new_object
