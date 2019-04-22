@@ -33,7 +33,8 @@ setup(
  #      'pyparsing>=1.5.6',
         'pyparsing',
         'pytimeparse>=1.1.4',
-        'PyYAML>=3.11',
+ # Force PyYAML version due awscli conflict
+        'PyYAML<=3.13',
         'testfixtures>=4.1.2',
         'pyprind',
         'sqlparse>=0.2.0'

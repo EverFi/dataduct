@@ -1,7 +1,6 @@
 """Script that parses the pipeline definition and has action functions
 """
 import yaml
-from yaml import FullLoader
 
 from ..pipeline import Activity
 from ..pipeline import MysqlNode
@@ -35,7 +34,7 @@ def read_pipeline_definition(file_path):
     if extension not in ['yml', 'yaml']:
         raise ETLInputError('Pipeline definition should have a yml or yaml extention')
     with open(file_path) as f:
-        definition = yaml.load(f.read(), Loader=FullLoader)
+        definition = yaml.load(f.read())
 
         # remove the variables key from the pipeline definition
         # http://stackoverflow.com/questions/4150782/using-yaml-with-variables
