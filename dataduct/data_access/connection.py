@@ -90,7 +90,7 @@ def get_postgres_config(database_name=None):
     """Get postgres config from config file and return the dictionary
     """
     if not hasattr(config,'postgres'):
-	raise ETLConfigError('Postgres config not found')
+        raise ETLConfigError('Postgres config not found')
 
     if database_name not in config.postgres:
         raise ETLConfigError(
