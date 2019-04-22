@@ -56,7 +56,7 @@ class DataductHelpAction(argparse._HelpAction):
     """
     def __call__(self, parser, namespace, values, option_string=None):
         parser.print_help()
-        print ''
+        print('')
 
         # Retrieve subparsers from parser
         subparsers_actions = [
@@ -66,8 +66,8 @@ class DataductHelpAction(argparse._HelpAction):
         for subparsers_action in subparsers_actions:
             # get all subparsers and print help
             for choice, subparser in subparsers_action.choices.items():
-                print "Command '{}'".format(choice)
-                print subparser.format_usage()
+                print("Command '{}'".format(choice))
+                print(subparser.format_usage())
         parser.exit()
 
 

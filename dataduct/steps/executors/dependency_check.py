@@ -57,7 +57,7 @@ def check_dependencies_ready(dependencies, start_date, dependencies_to_ignore):
         dependencies_to_ignore(list of str): dependencies to ignore if failed
     """
 
-    print 'Checking dependency at ', str(datetime.now())
+    print('Checking dependency at ', str(datetime.now()))
 
     dependency_ready = True
 
@@ -134,7 +134,7 @@ def dependency_check():
     # Map from dependency id to name
     dependencies = {pipeline_name_to_id[dep]: dep for dep in dependencies}
 
-    print 'Start checking for dependencies'
+    print('Start checking for dependencies')
     start_time = datetime.now()
 
     failures = []
@@ -142,7 +142,7 @@ def dependency_check():
 
     # Loop until all dependent pipelines have finished or failed
     while not dependencies_ready:
-        print 'checking'
+        print('checking')
         dependencies_ready, new_failures = check_dependencies_ready(dependencies,
                                                         args.start_date,
                                                         dependencies_to_ignore)
@@ -159,5 +159,5 @@ def dependency_check():
         else:
             raise Exception('ARN for SNS topic not specified in ETL config')
 
-    print 'Finished checking for dependencies. Total time spent: ',
-    print (datetime.now() - start_time).total_seconds(), ' seconds'
+    print('Finished checking for dependencies. Total time spent: ')
+    print((datetime.now() - start_time).total_seconds(), ' seconds')

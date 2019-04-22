@@ -4,7 +4,11 @@ Setup file for installation of the dataduct code
 from setuptools import find_packages
 from setuptools import setup
 
-execfile('dataduct/__init__.py')
+filename = 'dataduct/__init__.py'
+exec(compile(open(filename, "rb").read(), filename, 'exec'))
+
+# Deprecated on Python 3.6
+# execfile('dataduct/__init__.py')
 version = __version__
 
 setup(

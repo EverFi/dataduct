@@ -77,7 +77,7 @@ def get_destination_data(sql, primary_keys):
         sql,
     )
 
-    print query
+    print(query)
 
     data = pdsql.read_sql(query, connection)
     connection.close()
@@ -110,11 +110,11 @@ def column_check():
     # Open up a connection and read the source and destination tables
     source_data = get_source_data(args.source_sql, args.source_host,
                                    args.sample_size)
-    print source_data.to_string().encode('utf-8')
+    print(source_data.to_string().encode('utf-8'))
 
     destination_data = get_destination_data(args.destination_sql,
                                              list(source_data.index))
-    print destination_data.to_string().encode('utf-8')
+    print(destination_data.to_string().encode('utf-8'))
 
     check = ColumnCheck(source_data, destination_data,
                         name=args.test_name,

@@ -36,7 +36,7 @@ def to_dict(input):
     """Purge the ParseResults from output dictionary
     """
     output = dict()
-    for key, value in input.asDict().iteritems():
+    for key, value in input.asDict().items():
         if isinstance(value, ParseResults):
             output[key] = value.asList()
         else:

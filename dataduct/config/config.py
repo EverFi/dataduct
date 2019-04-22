@@ -4,6 +4,7 @@ from os.path import expanduser
 from os.path import join
 from os import environ
 import yaml
+from yaml import FullLoader
 import jinja2
 
 from .constants import CFG_FILE
@@ -52,7 +53,7 @@ def load_yaml(config_files):
     """
     for config_file in config_files:
         try:
-            return yaml.load(jinja2.Template(open(config_file, 'r').read()).render(ENV=environ))
+            return yaml.load(jinja2.Template(open(config_file, 'r').read()).render(ENV=environ), Loader=FullLoader)
         except (OSError, IOError):
             continue
     raise IOError('Dataduct config file is missing')

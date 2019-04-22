@@ -317,7 +317,7 @@ class ETLStep(object):
         depends_on = list()
         combined_node = self.create_s3_data_node()
 
-        for string_key, input_node in input_nodes.iteritems():
+        for string_key, input_node in input_nodes.items():
             dest_uri = S3Path(key=string_key, is_directory=True,
                               parent_dir=combined_node.path())
             copy_activity = self.copy_s3(input_node=input_node,

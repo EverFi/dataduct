@@ -64,12 +64,12 @@ def get_response_from_boto(fn, *args, **kwargs):
     while response is None:
         try:
             response = fn(*args, **kwargs)
-        except Exception, error:
+        except Exception as error:
             if error.error_code != 'ThrottlingException':
                 raise
             else:
                 sleep_time = _update_sleep_time(sleep_time)
-                print "Rate limit exceeded. Sleeping %d seconds." % sleep_time
+                print("Rate limit exceeded. Sleeping %d seconds." % sleep_time)
                 sleep(sleep_time)
     return response
 

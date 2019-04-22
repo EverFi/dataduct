@@ -49,7 +49,7 @@ def script_runner():
     input_file = os.path.join(input_src_dir, args.script_name)
     result = run_command([input_file] + ext_script_args)
     if result != 0:
-        print "Result: ", result
+        print("Result: ", result)
         raise Exception("Script failed.")
 
 
@@ -65,7 +65,7 @@ def sql_runner():
                         default=False)
 
     args, sql_arguments = parser.parse_known_args()
-    print args, sql_arguments
+    print(args, sql_arguments)
 
     sql_query = args.sql
     if sql_query.startswith('s3://'):
@@ -94,10 +94,10 @@ def sql_runner():
     # If there are sql_arguments, place them along with the query
     # Otherwise, don't include them to avoid having to use %% everytime
     if len(sql_arguments) >= 1:
-        print cursor.mogrify(sql_query, tuple(sql_arguments))
+        print(cursor.mogrify(sql_query, tuple(sql_arguments)))
         cursor.execute(sql_query, tuple(sql_arguments))
     else:
-        print sql_query
+        print(sql_query)
         cursor.execute(sql_query)
     cursor.execute('COMMIT')
 
