@@ -9,6 +9,7 @@ pandas = ">=0.14.1"
 psycopg2 = "*"
 coverage = "*"
 pyparsing = "*"
+#pyparsing = "==1.5.6"
 pygraphviz = "*"
 testfixtures = ">=4.1.1"
 mock = "*"
@@ -27,4 +28,4 @@ PyPrind = "*"
 [dev-packages]
 
 [requires]
-python_version = "3.6"
+python_version = "3.7"
