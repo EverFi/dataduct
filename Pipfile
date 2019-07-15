@@ -24,6 +24,7 @@ mysqlclient = ">=1.4.2"
 # Force PyYAML version due awscli conflict
 PyYAML = "<=3.13"
 PyPrind = "*"
+nose = "*"
 
 [dev-packages]
 
