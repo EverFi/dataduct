@@ -112,7 +112,7 @@ def database_actions(action, table_definitions, filename=None, execute=False,
 
     # TODO: Build execution options
     if script:
-        print script
+        print(script)
 
     if execute:
         logger.info('Getting redshift connection...')

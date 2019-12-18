@@ -122,7 +122,8 @@ class Database(object):
         # Run until the unsorted graph is empty
         while graph:
             acyclic = False
-            for relation_name, dependencies in graph.items():
+            # Cast graph.items() to list to avoid the error "dictionary changed size during iteration"
+            for relation_name, dependencies in list(graph.items()):
                 for dependency in dependencies:
                     if dependency in graph:
                         break

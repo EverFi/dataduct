@@ -19,7 +19,7 @@ def load_redshift(table, input_paths, max_error=0,
     """Load redshift table with the data in the input s3 paths
     """
     table_name = table.full_name
-    print 'Loading data into %s' % table_name
+    print('Loading data into %s' % table_name)
 
     # Credentials string
     aws_key, aws_secret, token = get_aws_credentials()
@@ -98,7 +98,7 @@ def create_load_redshift_runner():
     parser.add_argument('--force_drop_table', dest='force_drop_table',
                         default=False)
     script_arguments = parser.parse_args()
-    print script_arguments
+    print(script_arguments)
 
     table = Table(SqlStatement(script_arguments.table_definition))
     connection = redshift_connection(

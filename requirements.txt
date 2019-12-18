@@ -3,10 +3,11 @@ Sphinx>=1.2.3
 sphinx-rtd-theme>=0.1.6
 pandas>=0.14.1
 psycopg2
-MySQL-python
-PyYAML
+# Force PyYAML version due awscli conflict
+PyYAML<=3.13
 coverage
-pyparsing==1.5.6
+pyparsing
+mysqlclient>=1.4.2
 pygraphviz
 testfixtures>=4.1.1
 mock
@@ -15,3 +16,4 @@ pyprind
 requests
 sqlparse>=0.2.0
 ipdb
+nose

@@ -33,7 +33,7 @@ class PipelineObject(object):
         self._id = id
         self.fields = defaultdict(list)
 
-        for key, value in kwargs.iteritems():
+        for key, value in kwargs.items():
             if value is not None:
                 self[key] = value
 
@@ -57,7 +57,7 @@ class PipelineObject(object):
             result(list of S3Files): List of files to be uploaded to s3
         """
         result = self.additional_s3_files
-        for _, values in self.fields.iteritems():
+        for _, values in self.fields.items():
             for value in values:
                 if isinstance(value, S3File) or isinstance(value, S3Directory):
                     result.append(value)
@@ -130,7 +130,7 @@ class PipelineObject(object):
             result: The AWS-readable dict format of the object
         """
         fields = []
-        for key, values in self.fields.iteritems():
+        for key, values in self.fields.items():
             for value in values:
                 if isinstance(value, PipelineObject):
                     fields.append({'key': key, 'refValue': value.id})

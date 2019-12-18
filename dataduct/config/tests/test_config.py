@@ -69,7 +69,7 @@ class TestConfig(TestCase):
         """Tests that the yaml file can be loaded correctly
         """
         with TempDirectory() as d:
-            d.write('test.yaml', self.test_yaml_file)
+            d.write('test.yaml', self.test_yaml_file.encode('utf8'))
             result = load_yaml([join(d.path, 'test.yaml')])
             eq_(result, self.test_config_dict)
 
