@@ -105,8 +105,8 @@ class Check(object):
         """
 
         # Print results for logs
-        print self.results
-        print self.summary
+        print(self.results)
+        print(self.summary)
 
         if log_to_s3:
             self.log_output_to_s3(dest_sql, table, path_suffix)

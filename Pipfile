@@ -6,9 +6,10 @@ name = "pypi"
 [packages]
 boto = ">=2.34.0"
 pandas = ">=0.14.1"
-"psycopg2" = "*"
+psycopg2 = "*"
 coverage = "*"
-pyparsing = "==1.5.6"
+pyparsing = "*"
+#pyparsing = "==1.5.6"
 pygraphviz = "*"
 testfixtures = ">=4.1.1"
 mock = "*"
@@ -18,11 +19,14 @@ sqlparse = ">=0.2.0"
 ipdb = "*"
 Sphinx = ">=1.2.3"
 sphinx_rtd_theme = ">=0.1.6"
-MySQL-python = "*"
-PyYAML = "*"
+mysqlclient = ">=1.4.2"
+ # MySQL-python = "*"
+# Force PyYAML version due awscli conflict
+PyYAML = "<=3.13"
 PyPrind = "*"
+nose = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "2.7"
+python_version = "3.6"

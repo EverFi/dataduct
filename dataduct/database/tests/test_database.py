@@ -72,9 +72,9 @@ class TestDatabase(TestCase):
         with TempDirectory() as d:
             # Create files in the temp directory
             d.write(self.basic_table.full_name,
-                    self.basic_table.sql_statement.sql())
+                    self.basic_table.sql_statement.sql().encode('utf8'))
             d.write(self.basic_view.full_name,
-                    self.basic_view.sql_statement.sql())
+                    self.basic_view.sql_statement.sql().encode('utf8'))
             database = Database(
                 files=[os.path.join(d.path, self.basic_table.full_name),
                        os.path.join(d.path, self.basic_view.full_name)])
@@ -96,7 +96,7 @@ class TestDatabase(TestCase):
         with TempDirectory() as d:
             # Create a file in the temp directory
             d.write('test.sql',
-                    'SELECT * FROM test_table;')
+                    'SELECT * FROM test_table;'.encode('utf8'))
             Database(files=[os.path.join(d.path, 'test.sql')])
 
     @staticmethod

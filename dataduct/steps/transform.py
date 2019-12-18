@@ -209,7 +209,7 @@ class TransformStep(ETLStep):
                 if isinstance(argument, dict):
                     result.extend([
                         self.input_format(key, get_modified_s3_path(value))
-                        for key, value in argument.iteritems()
+                        for key, value in argument.items()
                     ])
                 else:
                     result.append(get_modified_s3_path(str(argument)))
@@ -217,7 +217,7 @@ class TransformStep(ETLStep):
 
         elif isinstance(script_arguments, dict):
             return [self.input_format(key, get_modified_s3_path(value))
-                    for key, value in script_arguments.iteritems()]
+                    for key, value in script_arguments.items()]
 
         elif isinstance(script_arguments, str):
             return [get_modified_s3_path(script_arguments)]

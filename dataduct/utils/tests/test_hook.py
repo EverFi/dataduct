@@ -75,7 +75,7 @@ class TestHooks(TestCase):
             '    return [number + 1], {}',
             'def after_hook(result):',
             '    return result + 2',
-        ])
+        ]).encode('utf8')
         self.temp_directory.write('test_hook.py', hook_file)
 
         config = Config()
@@ -96,7 +96,7 @@ class TestHooks(TestCase):
             '    return [number + 1], {}',
             'def after_hook(result):',
             '    return result + 2',
-        ])
+        ]).encode('utf8')
         self.temp_directory.write('unused_hook.py', hook_file)
 
         @hook('test_hook')
@@ -111,7 +111,7 @@ class TestHooks(TestCase):
         hook_file = '\n'.join([
             'def before_hook(number):',
             '    return [number + 1], {}',
-        ])
+        ]).encode('utf8')
         self.temp_directory.write('test_hook.py', hook_file)
 
         @hook('test_hook')
@@ -126,7 +126,7 @@ class TestHooks(TestCase):
         hook_file = '\n'.join([
             'def after_hook(result):',
             '    return result + 2',
-        ])
+        ]).encode('utf8')
         self.temp_directory.write('test_hook.py', hook_file)
 
         @hook('test_hook')
@@ -143,7 +143,7 @@ class TestHooks(TestCase):
             '    return [number + 1], {}',
             'def after_hook(result):',
             '    return result + 2',
-        ])
+        ]).encode('utf8')
         self.temp_directory.write('test_hook.py', hook_file)
 
         @hook('test_hook')
@@ -162,7 +162,7 @@ class TestHooks(TestCase):
             '    return [number + 1], {}',
             'def after_hook(result):',
             '    return result + 2',
-        ])
+        ]).encode('utf8')
         self.temp_directory.write('test_hook.py', hook_file)
 
         @hook('test_hook')
@@ -173,7 +173,7 @@ class TestHooks(TestCase):
         second_hook_file = '\n'.join([
             'def before_hook(number):',
             '    return [number + 100], {}',
-        ])
+        ]).encode('utf8')
         self.temp_directory.write('second_test_hook.py', second_hook_file)
 
         @hook('second_test_hook')

@@ -34,7 +34,7 @@ class EtlActionsTests(unittest.TestCase):
             '-   step_type: load-redshift',
             '    schema: dev',
             '    table: test_table',
-        ])
+        ]).encode('utf8')
         # Definition has no description field
         self.test_definition = {
             'name': 'example_load_redshift',

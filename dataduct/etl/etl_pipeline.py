@@ -5,12 +5,12 @@ import csv
 import os
 import yaml
 
-from StringIO import StringIO
+from io import StringIO
 from copy import deepcopy
 from datetime import datetime
 from datetime import timedelta
 from itertools import chain
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 from ..config import Config
 from .utils import process_steps
@@ -97,7 +97,7 @@ class ETLPipeline(object):
         if load_time and isinstance(load_time, str):
             load_hour, load_min = [int(x) for x in load_time.split(':')]
         elif load_time and isinstance(load_time, int):
-            load_hour, load_min = (load_time / 60, load_time % 60)
+            load_hour, load_min = (int(load_time / 60), load_time % 60)
         else:
             load_hour, load_min = [None, None]
 
@@ -559,7 +559,7 @@ class ETLPipeline(object):
             output(dict of S3Node): map of string : S3Node
         """
         output = dict()
-        for key, value in input_node.iteritems():
+        for key, value in input_node.items():
             if key not in self.intermediate_nodes:
                 raise ETLInputError('Input reference does not exist')
             output[value] = self.intermediate_nodes[key]
@@ -670,9 +670,9 @@ class ETLPipeline(object):
             result(list of PipelineObject): All steps related to the ETL
             i.e. all base objects as well as ones owned by steps
         """
-        result = self._base_objects.values()
+        result = list(self._base_objects.values())
         # Add all steps owned by the ETL steps
-        for step in self._steps.values():
+        for step in list(self._steps.values()):
             result.extend(step.pipeline_objects)
         return result
 
@@ -760,7 +760,7 @@ class ETLPipeline(object):
             return None
 
         tags = []
-        for key, value in tag_config.iteritems():
+        for key, value in tag_config.items():
             if 'string' in value and 'variable' in value:
                 raise ETLInputError(
                     'Tag config can not have both string and variable')
