@@ -22,6 +22,7 @@ from ..pipeline import EmrResource
 from ..pipeline import RedshiftDatabase
 from ..pipeline import PostgresDatabase
 from ..pipeline import MssqlDatabase
+from ..pipeline import SnowflakeDatabase
 from ..pipeline import S3Node
 from ..pipeline import SNSAlarm
 from ..pipeline import Schedule
@@ -186,6 +187,7 @@ class ETLPipeline(object):
         self._redshift_database = None
         self._postgres_database = None
         self._mssql_databases = None
+        self._snowflake_databases = None
         self._ec2_resource = None
         self._emr_cluster = None
         self.create_base_objects()
@@ -515,6 +517,30 @@ class ETLPipeline(object):
             ) for db in config.mssql.keys() }
         return self._mssql_databases
 
+    @property
+    def snowflake_databases(self):
+        """Get the snowflake database associated with the pipeline
+
+        Note:
+            This will create the object if it doesn't exist
+
+        Returns:
+            snowflake_database(Object): lazily-constructed snowflake database
+        """
+
+
+        if not self._snowflake_databases:
+            self._snowflake_databases = {db: self.create_pipeline_object(
+                object_class=SnowflakeDatabase,
+                username=config.snowflake[db]['USERNAME'],
+                password=config.snowflake[db]['PASSWORD'],
+                role=config.snowflake[db]['ROLE'],
+                account_name=config.snowflake[db]['ACCOUNT_NAME'],
+                warehouse=config.snowflake[db]['WAREHOUSE'],
+                jdbc_driver_uri=config.snowflake[db]['JDBC_DRIVER_URI'],
+                database=config.snowflake[db]['DATABASE_NAME'],
+            ) for db in config.snowflake.keys() }
+        return self._snowflake_databases
 
     def step(self, step_id):
         """Fetch a single step from the pipeline

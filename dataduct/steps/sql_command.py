@@ -19,6 +19,7 @@ class SqlCommandStep(ETLStep):
 
     def __init__(self,
                  redshift_database,
+                 snowflake_database=None,
                  script=None,
                  script_file=None,
                  script_arguments=None,
@@ -26,6 +27,8 @@ class SqlCommandStep(ETLStep):
                  sql_script=None,
                  command=None,
                  wrap_transaction=True,
+                 snowflake_db_ref=None,
+                 account_name=None,
                  **kwargs):
         """Constructor for the SqlCommandStep class
 
@@ -64,13 +67,18 @@ class SqlCommandStep(ETLStep):
         logger.debug('Sql Query:')
         logger.debug(sql_script)
 
+        if snowflake_database:
+            db_to_run = snowflake_database
+        else:
+            db_to_run = redshift_database
+
         self.create_pipeline_object(
             object_class=SqlActivity,
             max_retries=self.max_retries,
             resource=self.resource,
             worker_group=self.worker_group,
             schedule=self.schedule,
-            database=redshift_database,
+            database=db_to_run,
             script_arguments=script_arguments,
             depends_on=self.depends_on,
             script=script,
@@ -88,5 +96,8 @@ class SqlCommandStep(ETLStep):
         input_args = cls.pop_inputs(input_args)
         step_args = cls.base_arguments_processor(etl, input_args)
         step_args['redshift_database'] = etl.redshift_database
+        if 'snowflake_db_ref' in step_args:
+            db_ref = step_args['snowflake_db_ref']
+            step_args['snowflake_database'] = etl.snowflake_databases[db_ref]
 
         return step_args

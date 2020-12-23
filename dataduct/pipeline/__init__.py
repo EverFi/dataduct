@@ -23,3 +23,5 @@ from .sns_alarm import SNSAlarm
 from .sql_activity import SqlActivity
 from .emr_configuration import EmrConfiguration
 from .property import Property
+from .snowflake_database import SnowflakeDatabase
+from .snowflake_node import SnowflakeNode
